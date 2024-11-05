@@ -4,3 +4,5 @@
 # generated directories
 bin/
 obj/
+*.exe
+OLD - TNM084 labs/lab1/Lab1.exe
