@@ -206,7 +206,7 @@ Model* quad;
 
 void init(void)
 {
-    glutRepeatingTimer(3);
+    glutRepeatingTimer(1);
 
 	// two vertex buffer objects, used for uploading the
     //	unsigned int vertexBufferObjID;
@@ -266,6 +266,7 @@ void display(void)
 
     // MYCODE
 	glUniform1f(glGetUniformLocation(program, "time"), glutGet(GLUT_ELAPSED_TIME) / 1000.0);
+	// End Of my code
 
 	// clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

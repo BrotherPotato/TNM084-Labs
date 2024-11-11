@@ -10,6 +10,7 @@ uniform sampler2D tex;
 
 uniform int displayGPUversion;
 uniform float ringDensity;
+uniform float time;
 
 //const float ringDensity = 10.0;
 
@@ -80,9 +81,28 @@ void main(void)
 {
 	if (displayGPUversion == 1)
 	{
-		vec2 f = texCoord * 2.0 - vec2(1.0);
-		float radius = length(f); // Same as sqrt(fx*fx + fy * fy);
-		out_Color = vec4(cos(radius * ringDensity)/ 2.0 + 0.5,  0.5, sin(radius * ringDensity)/ 2.0 + 0.5, 1.0);
+        float pixelNoiseGradient = noise(texCoord) * 10 * cos(time);
+        vec2 scaledST = vec2(texCoord.s * 100.0 + sin(time) * 10, texCoord.t * 100.0) * 1;
+        scaledST = vec2(texCoord.s * 100.0, texCoord.t * 100.0) * 1;
+
+        float pixelIQNoise = iqnoise(scaledST, 5, 2) * 1.5;
+
+        float xx = fract(scaledST.s * 1);
+        float yy = fract(scaledST.t * 1);
+
+        //float pixelIQNoise = iqnoise(scaledST, 5, 2) * 0.5;
+        vec2 randomValue = random2(scaledST) * 0.1;
+
+
+        vec2 f = texCoord * 2.0 - vec2(1.0);
+		float radius1 = length(f) + pixelNoiseGradient; // Same as sqrt(fx*fx + fy * fy);
+		float radius2 = length(pixelIQNoise) + 0.5; // Same as sqrt(fx*fx + fy * fy);
+
+        out_Color = vec4(cos(radius1 * ringDensity + (time * 1))/ 2.0 + 0.5,  (0.3 - 1 * pixelNoiseGradient * 0.8) * pixelIQNoise, sin(radius1 * ringDensity + randomValue.s)/ 2.0 + 0.5, 1.0);
+
+        if(xx < 0.5 || yy < 0.5){
+            out_Color.r = out_Color.r * 0.7 + 0.3;
+        }
 	}
 	else
 		out_Color = texture(tex, texCoord);
