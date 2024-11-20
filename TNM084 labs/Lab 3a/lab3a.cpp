@@ -86,6 +86,9 @@ GLuint indices2[] = {	0,3,2, 0,2,1};
 
 // THIS IS WHERE YOUR WORK GOES!
 
+//declaring my function
+void recursiveBranch(float transFactor, float scaleFactor, float roatateFactor, int depth);
+
 gluggModel MakeTree()
 {
 	gluggSetPositionName("inPosition");
@@ -99,8 +102,112 @@ gluggModel MakeTree()
 
 	MakeCylinderAlt(20, 2, 0.1, 0.15);
 
+
+
+
+    //gluggTranslate(1,1,1);
+    //MakeCylinderAlt(6, 2, 0.1, 0.15);
+    float transFactor = 2;
+    float scaleFactor = 0.65;
+    float roatateFactor = 0.2;
+
+    recursiveBranch(transFactor, scaleFactor, roatateFactor, 0);
+
+    /*
+    for(int i = 1; i < 10; i++){
+        gluggTranslate(0,transFactor,0);
+        gluggScale(scaleFactor, scaleFactor, scaleFactor);
+        gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+        for(int j = 1; j < 10; j++){
+            gluggRotate(roatateFactor, 1.0, 0.0, 0.0);
+            MakeCylinderAlt(6, 2, 0.1, 0.15);
+        }
+
+    }
+    // reset matrix
+    for(int i = 1; i < 10; i++){
+        gluggTranslate(0,-transFactor,0);
+        gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
+        gluggRotate(-roatateFactor, 0.0, 0.0, 1.0);
+    }
+    */
+
+
+
+
 	return gluggBuildModel(0);
 }
+
+// MY FUNCTION
+void recursiveBranch(float transFactor, float scaleFactor, float roatateFactor, int depth){
+    if(depth > 5){
+        return;
+    }
+    { // first branch
+        gluggTranslate(0,transFactor,0);
+        gluggScale(scaleFactor, scaleFactor, scaleFactor);
+        gluggRotate(-roatateFactor, 0.0, 0.0, 1.0);
+        MakeCylinderAlt(6, 2, 0.1, 0.15);
+        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+
+        //resetMatrix
+        gluggTranslate(0,-transFactor,0);
+        gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
+        gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+    }
+    { // second branch
+        gluggTranslate(0,transFactor,0);
+        gluggScale(scaleFactor, scaleFactor, scaleFactor);
+        //gluggRotate(-roatateFactor, 0.0, 0.0, 1.0);
+        MakeCylinderAlt(6, 2, 0.1, 0.15);
+        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+
+        //resetMatrix
+        gluggTranslate(0,-transFactor,0);
+        gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
+        //gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+    }
+    { // third branch
+        gluggTranslate(0,transFactor,0);
+        gluggScale(scaleFactor, scaleFactor, scaleFactor);
+        gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+        MakeCylinderAlt(6, 2, 0.1, 0.15);
+        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+
+        //resetMatrix
+        gluggTranslate(0,-transFactor,0);
+        gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
+        gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+    }
+
+    { // forth branch
+        gluggTranslate(0,transFactor,0);
+        gluggScale(scaleFactor, scaleFactor, scaleFactor);
+        gluggRotate(-roatateFactor, 1.0, 0.0, 0.0);
+        MakeCylinderAlt(6, 2, 0.1, 0.15);
+        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+
+        //resetMatrix
+        gluggTranslate(0,-transFactor,0);
+        gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
+        gluggRotate(roatateFactor, 1.0, 0.0, 0.0);
+    }
+    { // fith branch
+        gluggTranslate(0,transFactor,0);
+        gluggScale(scaleFactor, scaleFactor, scaleFactor);
+        gluggRotate(roatateFactor, 1.0, 0.0, 0.0);
+        MakeCylinderAlt(6, 2, 0.1, 0.15);
+        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+
+        //resetMatrix
+        gluggTranslate(0,-transFactor,0);
+        gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
+        gluggRotate(-roatateFactor, 1.0, 0.0, 0.0);
+    }
+
+}
+
+
 
 gluggModel tree;
 
