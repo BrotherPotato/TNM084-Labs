@@ -12,6 +12,12 @@
 #include "LoadTGA.h"
 #include "glugg.h"
 
+// rand
+#include <stdlib.h>
+// time
+#include <time.h>
+
+
 // uses framework OpenGL
 // uses framework Cocoa
 
@@ -87,7 +93,7 @@ GLuint indices2[] = {	0,3,2, 0,2,1};
 // THIS IS WHERE YOUR WORK GOES!
 
 //declaring my function
-void recursiveBranch(float transFactor, float scaleFactor, float roatateFactor, int depth);
+void recursiveBranch(float transFactor, float scaleFactor, float rotateFactor, int depth, int maxDepth);
 
 gluggModel MakeTree()
 {
@@ -102,107 +108,126 @@ gluggModel MakeTree()
 
 	MakeCylinderAlt(20, 2, 0.1, 0.15);
 
-
-
-
-    //gluggTranslate(1,1,1);
-    //MakeCylinderAlt(6, 2, 0.1, 0.15);
     float transFactor = 2;
     float scaleFactor = 0.65;
-    float roatateFactor = 0.2;
+    float rotateFactor = 0.5;
+    int maxDepth = 5; // 7 is the limit for me
 
-    recursiveBranch(transFactor, scaleFactor, roatateFactor, 0);
-
-    /*
-    for(int i = 1; i < 10; i++){
-        gluggTranslate(0,transFactor,0);
-        gluggScale(scaleFactor, scaleFactor, scaleFactor);
-        gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
-        for(int j = 1; j < 10; j++){
-            gluggRotate(roatateFactor, 1.0, 0.0, 0.0);
-            MakeCylinderAlt(6, 2, 0.1, 0.15);
-        }
-
-    }
-    // reset matrix
-    for(int i = 1; i < 10; i++){
-        gluggTranslate(0,-transFactor,0);
-        gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
-        gluggRotate(-roatateFactor, 0.0, 0.0, 1.0);
-    }
-    */
-
-
-
+    recursiveBranch(transFactor, scaleFactor, rotateFactor, 0, maxDepth);
 
 	return gluggBuildModel(0);
 }
 
 // MY FUNCTION
-void recursiveBranch(float transFactor, float scaleFactor, float roatateFactor, int depth){
-    if(depth > 5){
+void recursiveBranch(float transFactor, float scaleFactor, float rotateFactor, int depth, int maxDepth){
+    if(depth > maxDepth){
         return;
     }
+
+    /* initialize random seed: */
+    //srand (time(NULL));
+
+    /* generate secret number between 1 and 10: */
+    float randScale = 0.03;
+
+    float randVectorScale = 0.5;
+    //rotateFactor = rotateFactor * (depth+1);
     { // first branch
+        float randFactor = rand() % 1 - 0.5; // between 0 and 1
+        rotateFactor = rotateFactor + randFactor * randScale;
+
+        float rotateVectorX = rand() % 1 - 0.5;
+        rotateVectorX *= randVectorScale;
+        float rotateVectorY = rand() % 1 - 0.5;
+        rotateVectorY *= randVectorScale;
+
         gluggTranslate(0,transFactor,0);
         gluggScale(scaleFactor, scaleFactor, scaleFactor);
-        gluggRotate(-roatateFactor, 0.0, 0.0, 1.0);
+        gluggRotate(-rotateFactor, rotateVectorX, rotateVectorY, 1.0);
         MakeCylinderAlt(6, 2, 0.1, 0.15);
-        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+        recursiveBranch(transFactor, scaleFactor, rotateFactor, depth+1, maxDepth);
 
         //resetMatrix
-        gluggTranslate(0,-transFactor,0);
+        gluggRotate(rotateFactor, rotateVectorX, rotateVectorY, 1.0);
         gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
-        gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+        gluggTranslate(0,-transFactor,0);
+
     }
     { // second branch
+        float randFactor = rand() % 1 - 0.5; // between 0 and 1
+        rotateFactor = rotateFactor + randFactor * randScale;
+
         gluggTranslate(0,transFactor,0);
         gluggScale(scaleFactor, scaleFactor, scaleFactor);
-        //gluggRotate(-roatateFactor, 0.0, 0.0, 1.0);
+        //gluggRotate(-rotateFactor, 0.0, 0.0, 1.0);
         MakeCylinderAlt(6, 2, 0.1, 0.15);
-        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+        recursiveBranch(transFactor, scaleFactor, rotateFactor, depth+1, maxDepth);
 
         //resetMatrix
-        gluggTranslate(0,-transFactor,0);
         gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
-        //gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+        gluggTranslate(0,-transFactor,0);
+        //gluggRotate(rotateFactor, 0.0, 0.0, 1.0);
     }
     { // third branch
+        float randFactor = rand() % 1 - 0.5; // between 0 and 1
+        rotateFactor = rotateFactor + randFactor * randScale;
+
+        float rotateVectorX = rand() % 1 - 0.5;
+        rotateVectorX *= randVectorScale;
+        float rotateVectorY = rand() % 1 - 0.5;
+        rotateVectorY *= randVectorScale;
+
         gluggTranslate(0,transFactor,0);
         gluggScale(scaleFactor, scaleFactor, scaleFactor);
-        gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+        gluggRotate(rotateFactor, rotateVectorX, rotateVectorY, 1.0);
         MakeCylinderAlt(6, 2, 0.1, 0.15);
-        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+        recursiveBranch(transFactor, scaleFactor, rotateFactor, depth+1, maxDepth);
 
         //resetMatrix
-        gluggTranslate(0,-transFactor,0);
+        gluggRotate(-rotateFactor, rotateVectorX, rotateVectorY, 1.0);
         gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
-        gluggRotate(roatateFactor, 0.0, 0.0, 1.0);
+        gluggTranslate(0,-transFactor,0);
     }
 
     { // forth branch
+        float randFactor = rand() % 1 - 0.5; // between 0 and 1
+        rotateFactor = rotateFactor + randFactor * randScale;
+
+        float rotateVectorY = rand() % 1 - 0.5;
+        rotateVectorY *= randVectorScale;
+        float rotateVectorZ = rand() % 1 - 0.5;
+        rotateVectorZ *= randVectorScale;
+
         gluggTranslate(0,transFactor,0);
         gluggScale(scaleFactor, scaleFactor, scaleFactor);
-        gluggRotate(-roatateFactor, 1.0, 0.0, 0.0);
+        gluggRotate(-rotateFactor, 1.0, rotateVectorY, rotateVectorZ);
         MakeCylinderAlt(6, 2, 0.1, 0.15);
-        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+        recursiveBranch(transFactor, scaleFactor, rotateFactor, depth+1, maxDepth);
 
         //resetMatrix
-        gluggTranslate(0,-transFactor,0);
+        gluggRotate(rotateFactor, 1.0, rotateVectorY, rotateVectorZ);
         gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
-        gluggRotate(roatateFactor, 1.0, 0.0, 0.0);
+        gluggTranslate(0,-transFactor,0);
     }
     { // fith branch
+        float randFactor = rand() % 1 - 0.5; // between 0 and 1
+        rotateFactor = rotateFactor + randFactor * randScale;
+
+        float rotateVectorY = rand() % 1 - 0.5;
+        rotateVectorY *= randVectorScale;
+        float rotateVectorZ = rand() % 1 - 0.5;
+        rotateVectorZ *= randVectorScale;
+
         gluggTranslate(0,transFactor,0);
         gluggScale(scaleFactor, scaleFactor, scaleFactor);
-        gluggRotate(roatateFactor, 1.0, 0.0, 0.0);
+        gluggRotate(rotateFactor, 1.0, rotateVectorY, rotateVectorZ);
         MakeCylinderAlt(6, 2, 0.1, 0.15);
-        recursiveBranch(transFactor, scaleFactor, roatateFactor, depth+1);
+        recursiveBranch(transFactor, scaleFactor, rotateFactor, depth+1, maxDepth);
 
         //resetMatrix
-        gluggTranslate(0,-transFactor,0);
+        gluggRotate(-rotateFactor, 1.0, rotateVectorY, rotateVectorZ);
         gluggScale(1/scaleFactor, 1/scaleFactor, 1/scaleFactor);
-        gluggRotate(-roatateFactor, 1.0, 0.0, 0.0);
+        gluggTranslate(0,-transFactor,0);
     }
 
 }
