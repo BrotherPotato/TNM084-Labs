@@ -6,6 +6,7 @@ in vec2 inTexCoord;
 
 out vec3 exNormal;
 out vec2 texCoord;
+out vec3 exPosition;
 
 uniform mat4 modelviewMatrix;
 uniform mat4 projectionMatrix;
@@ -14,6 +15,7 @@ void main(void)
 {
 	texCoord = inTexCoord;
 	exNormal = inNormal;
-	
+	exPosition = inPosition;
+
 	gl_Position = projectionMatrix * modelviewMatrix * vec4(inPosition, 1.0);
 }

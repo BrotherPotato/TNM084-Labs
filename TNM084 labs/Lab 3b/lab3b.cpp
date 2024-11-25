@@ -25,6 +25,8 @@
 // uses framework OpenGL
 // uses framework Cocoa
 
+#include <iostream>
+
 mat4 projectionMatrix;
 Model *floormodel;
 GLuint grasstex;
@@ -45,25 +47,85 @@ GLuint indices[(kTerrainSize-1)*(kTerrainSize-1)*3*2];
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
 
+
+float getHeight(int x, int z){
+    #define bumpHeight 0.5
+    #define bumpWidth 2.0
+
+    // squared distance to center
+    float h = ( (x - kTerrainSize/2)/bumpWidth * (x - kTerrainSize/2)/bumpWidth +  (z - kTerrainSize/2)/bumpWidth * (z - kTerrainSize/2)/bumpWidth );
+    float y = MAX(0, 3-h) * bumpHeight;
+    /*
+    float pointNoise = snoise2(x / 50.0, z / 50.0);
+    std::cout << ;
+
+    float noiseXZ = snoise2(x,z) * 0.1;
+    pointNoise += noiseXZ;
+    float noiseXX = snoise2(x * 40.0,x * 40.0) * noiseXZ/200.0 * 0.5;
+    pointNoise += noiseXX;
+    float noiseZZ = snoise2(z * 20.0,z * 20.0) * 0.6;
+    pointNoise += noiseZZ;
+    y+=pointNoise;
+    */
+    /*
+    int octaves = 10;
+    float lacunarity = 1.1;
+    float gain = 1.1;
+
+    float amp = 0.08;
+    float freq = 0.08;
+    */
+    int octaves = 50;
+    float lacunarity = 0.9;
+    float gain = 0.9;
+
+    float amp = 0.18;
+    float freq = 0.98;
+
+    for(int i = 0; i < octaves; i++){
+        y += amp * snoise2(x * freq, z * freq);
+        freq *= lacunarity;
+        amp *= gain;
+    }
+
+
+    return y;
+}
+
 void MakeTerrain()
 {
 	// TO DO: This is where your terrain generation goes if on CPU.
+
 	for (int x = 0; x < kTerrainSize; x++)
 	for (int z = 0; z < kTerrainSize; z++)
 	{
 		int ix = z * kTerrainSize + x;
 
-		#define bumpHeight 0.5
-		#define bumpWidth 2.0
-
-		// squared distance to center
-		float h = ( (x - kTerrainSize/2)/bumpWidth * (x - kTerrainSize/2)/bumpWidth +  (z - kTerrainSize/2)/bumpWidth * (z - kTerrainSize/2)/bumpWidth );
-		float y = MAX(0, 3-h) * bumpHeight;
+		float y = getHeight(x,z);
 
 		vertices[ix] = vec3(x * kPolySize, y, z * kPolySize);
 		texCoords[ix] = vec2(x, z);
-		normals[ix] = vec3(0,1,0);
+
+
+		// my normal function
+
+		// get closest vertices
+		vec3 vertex1 = vec3((x+1) * kPolySize, getHeight(x+1,z+1), (z+1) * kPolySize);
+		vec3 vertex2 = vec3((x-1) * kPolySize, getHeight(x-1,z+1), (z+1) * kPolySize);
+		vec3 vertex3 = vec3((x+1) * kPolySize, getHeight(x+1,z-1), (z-1) * kPolySize);
+		vec3 vertex4 = vec3((x-1) * kPolySize, getHeight(x-1,z-1), (z-1) * kPolySize);
+
+		vec3 line1 = normalize(vertex1 - vertex4);
+		vec3 line2 = normalize(vertex3 - vertex2);
+
+		vec3 planeNormal = cross(line1, line2);
+		planeNormal = normalize(planeNormal);
+        //std::cout << planeNormal.x << " " << planeNormal.y << " " << planeNormal.z << "\n";
+
+		normals[ix] = planeNormal;
 	}
+
+
 
 	// Make indices
 	// You don't need to change this.
@@ -84,11 +146,12 @@ void MakeTerrain()
 
 	// Make normal vectors
 	// TO DO: This is where you calculate normal vectors
-	for (int x = 0; x < kTerrainSize; x++)
-	for (int z = 0; z < kTerrainSize; z++)
-	{
-		normals[z * kTerrainSize + x] = SetVec3(0,1,0);
-	}
+	//for (int x = 0; x < kTerrainSize; x++)
+	//for (int z = 0; z < kTerrainSize; z++)
+	//{
+	//	normals[z * kTerrainSize + x] = SetVec3(0,1,0);
+	//}
+	//vertices[(z+1) * kTerrainSize + (x+1)]
 }
 
 void init(void)
