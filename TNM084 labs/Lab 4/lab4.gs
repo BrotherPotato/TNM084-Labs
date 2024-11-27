@@ -71,6 +71,24 @@ float noise(vec3 st)
           	);
 }
 
+// FBM Noise
+float noiseFBM (vec3 p) {
+    int octaves = 20;
+    float lacunarity = 1.5;
+    float gain = 0.6;
+
+    float amp = 0.15; //0.1
+    float freq = 0.88;
+    float noiseValue = 0;
+
+    for(int i = 0; i < octaves; i++){
+        noiseValue += amp * noise(p * freq);
+        freq *= lacunarity;
+        amp *= gain;
+    }
+    return noiseValue;
+}
+
 void computeVertex(int nr)
 {
 	vec3 p, v1, v2, v3, p1, p2, p3, s1, s2, n;
@@ -78,7 +96,9 @@ void computeVertex(int nr)
 	p = vec3(gl_in[nr].gl_Position);
 	// Add interesting code here
 	// gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(p, 1.0);
-	gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(normalize(p), 1.0);
+
+	float pointNoise = noiseFBM(p);
+	gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(normalize(p)+pointNoise, 1.0);
 
     gsTexCoord = teTexCoord[0];
 
