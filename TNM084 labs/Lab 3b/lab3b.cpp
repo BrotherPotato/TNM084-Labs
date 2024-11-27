@@ -76,14 +76,15 @@ float getHeight(int x, int z){
     float freq = 0.08;
     */
     int octaves = 50;
-    float lacunarity = 0.9;
-    float gain = 0.9;
+    float lacunarity = 1.3;
+    float gain = 0.6;
 
-    float amp = 0.18;
-    float freq = 0.98;
+    float amp = 0.78; // 98
+    float freq = 0.18;
 
     for(int i = 0; i < octaves; i++){
-        y += amp * snoise2(x * freq, z * freq);
+        y += amp * noise2(x * freq, z * freq);
+        //y += amp * 2 * snoise2(noise2(x * freq, z * freq), noise2(x * freq, z * freq) * freq);
         freq *= lacunarity;
         amp *= gain;
     }
