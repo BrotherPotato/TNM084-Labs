@@ -2,8 +2,8 @@
 
 layout(triangles) in;
 // Use line_strip for visualization and triangle_strip for solids
-//layout(triangle_strip, max_vertices = 3) out;
-layout(line_strip, max_vertices = 3) out;
+layout(triangle_strip, max_vertices = 3) out;
+//layout(line_strip, max_vertices = 3) out;
 in vec2 teTexCoord[3];
 in vec3 teNormal[3];
 out vec2 gsTexCoord;
@@ -77,7 +77,8 @@ void computeVertex(int nr)
 
 	p = vec3(gl_in[nr].gl_Position);
 	// Add interesting code here
-	gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(p, 1.0);
+	// gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(p, 1.0);
+	gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(normalize(p), 1.0);
 
     gsTexCoord = teTexCoord[0];
 

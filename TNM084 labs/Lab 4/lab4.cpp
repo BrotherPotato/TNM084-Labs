@@ -100,7 +100,7 @@ void init(void)
 	glClearColor(0.5,0.6,1.0,0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glCullFace(GL_TRUE);
+	//glCullFace(GL_TRUE);
 
 	// Load and compile shader
 	shader = loadShadersGT("lab4.vs", "lab4.fs", "lab4.gs",
