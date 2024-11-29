@@ -73,6 +73,7 @@ float noise(vec3 st)
 
 // FBM Noise
 float noiseFBM (vec3 p) {
+    return 0;
     int octaves = 20;
     float lacunarity = 1.5;
     float gain = 0.6;
@@ -89,6 +90,24 @@ float noiseFBM (vec3 p) {
     return noiseValue;
 }
 
+vec3 computeNormal(vec3 p){
+    float delta = 0.0001;
+
+    vec3 p1 = vec3(p.x+delta, p.y, p.z);
+    vec3 p2 = vec3(p.x, p.y+delta, p.z);
+    vec3 p3 = vec3(p.x, p.y, p.z+delta);
+
+
+    vec3 p1wNoise = normalize(p1)+noiseFBM(p1);
+    vec3 p2wNoise = normalize(p2)+noiseFBM(p2);
+    vec3 p3wNoise = normalize(p3)+noiseFBM(p3);
+
+    vec3 line1 = p1wNoise - p2wNoise;
+    vec3 line2 = p1wNoise - p3wNoise;
+
+    return normalize(cross(line1, line2));
+}
+
 void computeVertex(int nr)
 {
 	vec3 p, v1, v2, v3, p1, p2, p3, s1, s2, n;
@@ -102,7 +121,9 @@ void computeVertex(int nr)
 
     gsTexCoord = teTexCoord[0];
 
-	n = teNormal[nr]; // This is not the normal you are looking for. Move along!
+	//n = teNormal[nr]; // This is not the normal you are looking for. Move along!
+
+	n = computeNormal(p);
     gsNormal = mat3(camMatrix * mdlMatrix) * n;
     EmitVertex();
 }
