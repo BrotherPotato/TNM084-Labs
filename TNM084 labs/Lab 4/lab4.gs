@@ -73,7 +73,7 @@ float noise(vec3 st)
 
 // FBM Noise
 float noiseFBM (vec3 p) {
-    return 0;
+    //return 0;
     int octaves = 20;
     float lacunarity = 1.5;
     float gain = 0.6;
