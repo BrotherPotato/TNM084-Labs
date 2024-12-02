@@ -8,6 +8,8 @@ in vec2 teTexCoord[3];
 in vec3 teNormal[3];
 out vec2 gsTexCoord;
 out vec3 gsNormal;
+out float height;
+
 uniform sampler2D tex;
 
 uniform mat4 projMatrix;
@@ -73,17 +75,16 @@ float noise(vec3 st)
 
 // FBM Noise
 float noiseFBM (vec3 p) {
-    //return 0;
-    int octaves = 20;
+    int octaves = 40;
     float lacunarity = 1.5;
     float gain = 0.6;
 
-    float amp = 0.15; //0.1
+    float amp = 0.35;
     float freq = 0.88;
     float noiseValue = 0;
 
     for(int i = 0; i < octaves; i++){
-        noiseValue += amp * noise(p * freq);
+        noiseValue += amp * (noise(p * freq));
         freq *= lacunarity;
         amp *= gain;
     }
@@ -91,21 +92,30 @@ float noiseFBM (vec3 p) {
 }
 
 vec3 computeNormal(vec3 p){
-    float delta = 0.0001;
+    float delta = 0.001;
 
-    vec3 p1 = vec3(p.x+delta, p.y, p.z);
-    vec3 p2 = vec3(p.x, p.y+delta, p.z);
-    vec3 p3 = vec3(p.x, p.y, p.z+delta);
+    // use cross 2 times to create a plane, first try with 1,0,0 otherwise 0,1,0
+	vec3 v1 = normalize(cross(p, vec3(1,0,0)));
+	if (v1 == vec3(0,0,0)) {
+        v1 = normalize(cross(p, vec3(0,1,0)));
+	}
+	vec3 v2 = normalize(cross(p, v1));
+	vec3 v3 = normalize(-v2-v1); // get some linearcomb
 
+	// in local coord v1, v2, v3, move a small amount to find points close to the target point p
+	vec3 p1 = v1*delta + p;
+	vec3 p2 = v2*delta + p;
+	vec3 p3 = v3*delta + p;
 
-    vec3 p1wNoise = normalize(p1)+noiseFBM(p1);
-    vec3 p2wNoise = normalize(p2)+noiseFBM(p2);
-    vec3 p3wNoise = normalize(p3)+noiseFBM(p3);
+	p1 = p1 + noiseFBM(p1)*p1;
+	p2 = p2 + noiseFBM(p2)*p2;
+	p3 = p3 + noiseFBM(p3)*p3;
 
-    vec3 line1 = p1wNoise - p2wNoise;
-    vec3 line2 = p1wNoise - p3wNoise;
-
-    return normalize(cross(line1, line2));
+	// cross method to get the normal
+	vec3 s1 = p2-p1;
+	vec3 s2 = p3-p1;
+    vec3 n = cross(s1,s2);
+    return normalize(n);
 }
 
 void computeVertex(int nr)
@@ -114,14 +124,13 @@ void computeVertex(int nr)
 
 	p = vec3(gl_in[nr].gl_Position);
 	// Add interesting code here
-	// gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(p, 1.0);
 
 	float pointNoise = noiseFBM(p);
-	gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(normalize(p)+pointNoise, 1.0);
+	gl_Position = projMatrix * camMatrix * mdlMatrix * vec4(normalize(p)+pointNoise*p, 1.0);
+
+	height = length(normalize(p)+pointNoise*p);
 
     gsTexCoord = teTexCoord[0];
-
-	//n = teNormal[nr]; // This is not the normal you are looking for. Move along!
 
 	n = computeNormal(p);
     gsNormal = mat3(camMatrix * mdlMatrix) * n;
@@ -134,4 +143,3 @@ void main()
 	computeVertex(1);
 	computeVertex(2);
 }
-

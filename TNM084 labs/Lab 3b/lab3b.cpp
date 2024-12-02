@@ -79,7 +79,7 @@ float getHeight(int x, int z){
     float lacunarity = 1.3;
     float gain = 0.6;
 
-    float amp = 0.78; // 98
+    float amp = 1.08; // 98
     float freq = 0.18;
 
     for(int i = 0; i < octaves; i++){
